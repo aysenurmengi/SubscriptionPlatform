@@ -12,6 +12,8 @@ namespace SubscriptionPlatform.Application.Interfaces.Repositories
         IOrderRepository Orders { get; }
         IPreferenceRepository Preferences { get; }
         IInventoryRepository Inventories { get; }
+        IInvoiceRepository Invoices { get; }
+        ISubscriptionPlanRepository SubscriptionPlans { get; }
     
 
         // transaction kontrolü burada 

@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
+using SubscriptionPlatform.Application.Common.Behaviors;
+using MediatR;
 
 namespace SubscriptionPlatform.Application
 {
@@ -10,7 +12,11 @@ namespace SubscriptionPlatform.Application
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); 
+            });
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
