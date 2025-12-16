@@ -7,5 +7,6 @@ namespace SubscriptionPlatform.Domain.Entities
         public string Name { get; set; }
         public decimal Price { get; set; }
         public bool IsActive { get; set; }
+        public ICollection<SubscriptionPlanItem> PlanItems { get; set; } = new List<SubscriptionPlanItem>();
     }
 }

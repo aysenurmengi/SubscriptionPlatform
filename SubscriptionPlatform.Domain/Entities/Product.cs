@@ -11,7 +11,7 @@ namespace SubscriptionPlatform.Domain.Entities
         public string ImageUrl { get; set; } = string.Empty;
 
         public Inventory Inventory { get; set; }
-
+        public ICollection<SubscriptionPlanItem> PlanItems { get; set; } = new List<SubscriptionPlanItem>();
 
     }
 }
