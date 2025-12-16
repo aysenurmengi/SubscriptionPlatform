@@ -4,6 +4,7 @@ namespace SubscriptionPlatform.Domain.Enums
     { 
         Active, 
         Paused, 
-        Cancelled 
+        Cancelled,
+        PaymentFailed // ödeme?
     }
 }

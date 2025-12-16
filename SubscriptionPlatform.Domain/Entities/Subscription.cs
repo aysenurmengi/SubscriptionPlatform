@@ -10,6 +10,9 @@ namespace SubscriptionPlatform.Domain.Entities
         public DateTime NextRenewalDate { get; set; }
         public BillingCycle Cycle { get; set; }
         public SubscriptionStatus Status { get; set; }
+        public Guid PlanId { get; set; } // hangi ürüne abone?
+        public string PaymentToken { get; set; }  //tekrarlayan ödeme için token
+        public decimal PlanPrice { get; set; } // abonelik başlangıç fiyatı
 
         public Customer Customer { get; set; }
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
