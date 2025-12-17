@@ -14,6 +14,7 @@ namespace SubscriptionPlatform.Application.Interfaces.Repositories
         IInventoryRepository Inventories { get; }
         IInvoiceRepository Invoices { get; }
         ISubscriptionPlanRepository SubscriptionPlans { get; }
+        IUserRepository Users { get; }
     
 
         // transaction kontrolü burada 

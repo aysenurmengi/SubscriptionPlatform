@@ -13,6 +13,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence
         public IInventoryRepository Inventories { get; private set; }
         public IInvoiceRepository Invoices { get; private set; }
         public ISubscriptionPlanRepository SubscriptionPlans { get; private set; }
+        public IUserRepository Users { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
