@@ -24,12 +24,12 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
             builder.HasMany(sp => sp.PlanItems) 
                    .WithOne(spi => spi.SubscriptionPlan) 
                    .HasForeignKey(spi => spi.SubscriptionPlanId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Cascade); // ana varlık silindiğinde bağımlı varlıklar silinsin(Cascade)
             
             builder.HasIndex(sp => sp.Name)
                    .IsUnique();
 
-            builder.ToTable(t => t.HasCheckConstraint("CH_Plan_Price_Positive", "Price >= 0"));
+            builder.ToTable(t => t.HasCheckConstraint("CH_Plan_Price_Positive", "Price >= 0")); // fiyat için kontrol kısıtlaması
         }
     }
 }
