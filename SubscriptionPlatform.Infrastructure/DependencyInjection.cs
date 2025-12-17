@@ -21,6 +21,8 @@ namespace SubscriptionPlatform.Infrastructure
             //services.AddScoped<IUserRepository, UserRepository>(); gibi..
             
             services.AddTransient<IPaymentService, FakePaymentService>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IFulfillmentService, FulfillmentService>();
 
             return services;
         }
