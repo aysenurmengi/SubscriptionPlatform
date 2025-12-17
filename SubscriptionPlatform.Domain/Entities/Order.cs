@@ -6,6 +6,7 @@ namespace SubscriptionPlatform.Domain.Entities
     public class Order : BaseEntity
     {
         public Guid CustomerId {get; set;}
+        public Customer Customer { get; set; }
         public Guid? SubscriptionId {get; set;}
         public OrderStatus Status {get; set;}
         public string ShippingAddress {get; set;}

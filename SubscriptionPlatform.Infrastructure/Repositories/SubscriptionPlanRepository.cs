@@ -4,9 +4,9 @@ using SubscriptionPlatform.Infrastructure.Persistence;
 
 namespace SubscriptionPlatform.Infrastructure.Repositories
 {
-    public class ProductRepository : GenericRepository<Product>, IProductRepository
+    public class SubscriptionPlanRepository : GenericRepository<SubscriptionPlan>, ISubscriptionPlanRepository
     {
-        public ProductRepository(ApplicationDbContext context) : base(context)
+        public SubscriptionPlanRepository(ApplicationDbContext context) : base(context)
         {}
     }
 }

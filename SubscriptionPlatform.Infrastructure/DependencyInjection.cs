@@ -16,6 +16,9 @@ namespace SubscriptionPlatform.Infrastructure
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            //buraya isteğe bağlı repository eklemeleri yapılabilir
+            //services.AddScoped<IUserRepository, UserRepository>(); gibi..
             
             services.AddTransient<IPaymentService, FakePaymentService>();
 

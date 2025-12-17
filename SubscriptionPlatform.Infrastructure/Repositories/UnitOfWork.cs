@@ -1,4 +1,6 @@
 using SubscriptionPlatform.Application.Interfaces.Repositories;
+using SubscriptionPlatform.Domain.Entities;
+using SubscriptionPlatform.Infrastructure.Repositories;
 
 namespace SubscriptionPlatform.Infrastructure.Persistence
 {
@@ -18,11 +20,22 @@ namespace SubscriptionPlatform.Infrastructure.Persistence
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
+
+            Customers = new CustomerRepository(_context);
+            Inventories = new InventoryRepository(_context);
+            Invoices = new InvoiceRepository(_context);
+            Orders = new OrderRepository(_context);
+            Preferences = new PreferenceRepository(_context);
+            Products = new ProductRepository(_context);
+            Subscriptions = new SubscriptionRepository(_context);
+            SubscriptionPlans = new SubscriptionPlanRepository(_context);
+            Users = new UserRepository(_context);
         }
 
         public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();
+
         }
 
         public void Dispose()
