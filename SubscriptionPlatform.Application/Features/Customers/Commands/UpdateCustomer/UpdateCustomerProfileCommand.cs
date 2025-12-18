@@ -1,5 +1,4 @@
 using MediatR;
-using SubscriptionPlatform.Application.Features.Queries;
 
 namespace SubscriptionPlatform.Application.Features.Customers.Commands.UpdateCustomer
 {

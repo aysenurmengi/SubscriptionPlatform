@@ -1,11 +1,9 @@
 using MediatR;
 
-namespace SubscriptionPlatform.Application.Features.Queries
+namespace SubscriptionPlatform.Application.Features.Customers.Queries
 {
-    public class GetCustomerByIdQuery(Guid CustomerId) : IRequest<CustomerDto>
-    {
-        public Guid Id { get; set; }
-    }
+    public record GetCustomerByIdQuery(Guid CustomerId) : IRequest<CustomerDto>
+    {}
     public class CustomerDto
     {
         public Guid Id { get; set; }

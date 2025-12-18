@@ -2,7 +2,7 @@ using AutoMapper;
 using MediatR;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 
-namespace SubscriptionPlatform.Application.Features.Queries
+namespace SubscriptionPlatform.Application.Features.Customers.Queries
 {
     public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
     {
@@ -17,13 +17,19 @@ namespace SubscriptionPlatform.Application.Features.Queries
 
         public async Task<CustomerDto> Handle(GetCustomerByIdQuery request,CancellationToken cancellationToken)
         {
-            var customer = await _unitOfWork.Customers.GetByIdAsync(request.Id);
+            var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId);
             if (customer == null)
             {
                 throw new ApplicationException("Müşteri bulunamadı.");
             }
 
-            var customerDto = _mapper.Map<CustomerDto>(customer);
+            var customerDto = new CustomerDto
+            {
+                Id = customer.Id,
+                Email = customer.Email,
+                FullName = $"{customer.FirstName} {customer.LastName}"
+            };
+            
             return customerDto;
         }
 

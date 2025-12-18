@@ -8,14 +8,12 @@ namespace SubscriptionPlatform.Application.Features.Customers.Queries
     public class GetCustomerSubscriptionsHandler : IRequestHandler<GetCustomerSubscriptionsQuery, IReadOnlyList<SubscriptionDto>>
     {
         public readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public GetCustomerSubscriptionsHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetCustomerSubscriptionsHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
         
-        public async Task<IReadOnlyList<SubscriptionDto>> Handle(GetCustomerSubscriptionsQuery request, CancellationToken cancellationToken)
+       public async Task<IReadOnlyList<SubscriptionDto>> Handle(GetCustomerSubscriptionsQuery request, CancellationToken cancellationToken)
         {
             var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId);
             
@@ -24,10 +22,28 @@ namespace SubscriptionPlatform.Application.Features.Customers.Queries
                 return new List<SubscriptionDto>();
             }
 
-            var customerSubscriptions = await _unitOfWork.Subscriptions.GetByCustomerIdAsync(request.CustomerId);
-            var subscriptionDtos = _mapper.Map<IReadOnlyList<SubscriptionDto>>(customerSubscriptions);
+            var subscriptions = await _unitOfWork.Subscriptions.GetByCustomerIdAsync(request.CustomerId);
+            
+            var dtoList = new List<SubscriptionDto>();
 
-            return subscriptionDtos;
+            foreach (var sub in subscriptions)
+            {
+                var plan = await _unitOfWork.SubscriptionPlans.GetByIdAsync(sub.PlanId);
+
+                string realPlanName = plan != null ? plan.Name : "Bilinmeyen Plan";
+
+                dtoList.Add(new SubscriptionDto
+                {
+                    SubscriptionId = sub.Id,
+                    PlanName = realPlanName,  
+                    Price = sub.PlanPrice,    
+                    BillingCycle = sub.Cycle,  
+                    Status = sub.Status,    
+                    NextRenewalDate = sub.NextRenewalDate
+                });
+            }
+
+            return dtoList;
         }
     }
 }

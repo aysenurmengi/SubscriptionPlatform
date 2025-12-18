@@ -7,7 +7,6 @@ namespace SubscriptionPlatform.Domain.Entities
         public string FirstName { get; set; }
         public string LastName { get; set;}
         public string Email { get; set; }
-        public string PasswordHash { get; set; }
 
         public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public ICollection<Preference> Preferences { get; set; } = new List<Preference>();

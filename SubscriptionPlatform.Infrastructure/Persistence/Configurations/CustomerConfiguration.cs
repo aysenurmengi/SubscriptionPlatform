@@ -24,9 +24,6 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(c => c.Email)
                     .IsUnique(); 
-
-            builder.Property(c => c.PasswordHash)
-                   .IsRequired();
             
             builder.HasMany(c => c.Subscriptions) // customer -> subscriptions
                    .WithOne() 

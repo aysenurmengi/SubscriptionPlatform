@@ -1,6 +1,5 @@
 using AutoMapper;
 using MediatR;
-using SubscriptionPlatform.Application.Features.Queries;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 
 namespace SubscriptionPlatform.Application.Features.Customers.Queries
@@ -8,11 +7,9 @@ namespace SubscriptionPlatform.Application.Features.Customers.Queries
     public class GetCustomerByEmailQueryHandler : IRequestHandler<GetCustomerByEmailQuery, CustomerDto>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public GetCustomerByEmailQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetCustomerByEmailQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         public async Task<CustomerDto> Handle(GetCustomerByEmailQuery request, CancellationToken cancellationToken)
@@ -23,8 +20,15 @@ namespace SubscriptionPlatform.Application.Features.Customers.Queries
                 throw new ApplicationException("Müşteri bulunamadı.");
             }
 
-            var customerDto = _mapper.Map<CustomerDto>(customer);
+            var customerDto = new CustomerDto
+            {
+                Id = customer.Id,
+                Email = customer.Email,
+                FullName = $"{customer.FirstName} {customer.LastName}"
+            };
             return customerDto;
         }
+
+        
     }
 }
