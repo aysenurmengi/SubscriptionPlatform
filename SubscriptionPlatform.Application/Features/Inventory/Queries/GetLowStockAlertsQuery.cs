@@ -3,9 +3,7 @@ using MediatR;
 namespace SubscriptionPlatform.Application.Features.Inventory.Queries
 {
     public class GetLowStockAlertsQuery : IRequest<IReadOnlyList<InventoryStatusDto>>
-    {
-        public Guid ProductId { get; set; }
-    }
+    {}
     public class InventoryStatusDto
     {
         public Guid ProductId { get; set; }
