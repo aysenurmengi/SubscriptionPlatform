@@ -26,7 +26,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
             builder.Property(i => i.DueDate)
                    .IsRequired();
 
-            builder.HasOne<Subscription>()
+            builder.HasOne(i => i.Subscription)
                    .WithMany() 
                    .HasForeignKey(i => i.SubscriptionId) 
                    .IsRequired()

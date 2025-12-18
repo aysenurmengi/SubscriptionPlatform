@@ -8,6 +8,7 @@ namespace SubscriptionPlatform.Domain.Entities
         public Guid CustomerId {get; set;}
         public Customer Customer { get; set; }
         public Guid? SubscriptionId {get; set;}
+        public virtual Subscription? Subscription { get; set; }
         public OrderStatus Status {get; set;}
         public string ShippingAddress {get; set;}
         public ShippingStatus ShippingStatus {get; set;}

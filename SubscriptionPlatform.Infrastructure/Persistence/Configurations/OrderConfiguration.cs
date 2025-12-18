@@ -30,7 +30,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
                    .IsRequired();
 
 
-            builder.HasOne<Customer>() //order - customer
+            builder.HasOne(o => o.Customer) //order - customer
                    .WithMany(c => c.Orders) // customer -> orders
                    .HasForeignKey(o => o.CustomerId)
                    .IsRequired(); 

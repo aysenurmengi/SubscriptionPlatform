@@ -6,6 +6,7 @@ namespace SubscriptionPlatform.Domain.Entities
     public class Invoice : BaseEntity
     { 
         public Guid SubscriptionId {get; set;}
+        public virtual Subscription? Subscription { get; set; }
         public decimal Amount {get; set;}
         public PaymentStatus PaymentStatus {get; set;}
         public DateTime IssueDate {get; set;}
