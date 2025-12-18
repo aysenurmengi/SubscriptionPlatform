@@ -1,9 +1,5 @@
-using AutoMapper;
 using MediatR;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SubscriptionPlatform.Application.Features.Subscriptions.Queries
 {
@@ -33,6 +29,7 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Queries
                 Status = subscription.Status,
                 NextRenewalDate = subscription.NextRenewalDate,
                 Cycle = subscription.Cycle,
+                StartDate = subscription.StartDate,
             };
         }
     }

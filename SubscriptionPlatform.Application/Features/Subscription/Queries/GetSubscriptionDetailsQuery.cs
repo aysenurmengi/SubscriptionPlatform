@@ -1,7 +1,5 @@
 using MediatR;
 using SubscriptionPlatform.Domain.Enums;
-using System;
-
 namespace SubscriptionPlatform.Application.Features.Subscriptions.Queries
 {
     public class GetSubscriptionDetailsQuery : IRequest<SubscriptionDetailDto>
