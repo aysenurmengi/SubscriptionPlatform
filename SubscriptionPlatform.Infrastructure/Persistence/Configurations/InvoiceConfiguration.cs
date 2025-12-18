@@ -32,7 +32,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
                    .IsRequired()
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.ToTable(t => t.HasCheckConstraint("CH_Invoice_Amount_Positive", "Amount >= 0"));
+            builder.ToTable(t => t.HasCheckConstraint("CH_Invoice_Amount_Positive", "\"Amount\" >= 0"));
         }
     }
 }

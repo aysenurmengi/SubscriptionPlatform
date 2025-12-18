@@ -29,7 +29,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
             builder.HasIndex(sp => sp.Name)
                    .IsUnique();
 
-            builder.ToTable(t => t.HasCheckConstraint("CH_Plan_Price_Positive", "Price >= 0")); // fiyat için kontrol kısıtlaması
+            builder.ToTable(t => t.HasCheckConstraint("CH_Plan_Price_Positive", "\"Price\" >= 0"));
         }
     }
 }

@@ -5,6 +5,7 @@ using SubscriptionPlatform.Infrastructure;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 
@@ -48,5 +49,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();

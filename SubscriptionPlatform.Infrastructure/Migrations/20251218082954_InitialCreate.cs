@@ -57,7 +57,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionPlans", x => x.Id);
-                    table.CheckConstraint("CH_Plan_Price_Positive", "Price >= 0");
+                    table.CheckConstraint("CH_Plan_Price_Positive", "\"Price\" >= 0");
                 });
 
             migrationBuilder.CreateTable(
@@ -137,7 +137,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Inventory", x => x.Id);
-                    table.CheckConstraint("CH_Inventory_StockQuantity_Positive", "StockQuantity >= 0");
+                    table.CheckConstraint("CH_Inventory_StockQuantity_Positive", "\"StockQuantity\" >= 0");
                     table.ForeignKey(
                         name: "FK_Inventory_Products_ProductId",
                         column: x => x.ProductId,
@@ -159,7 +159,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionPlanItems", x => x.Id);
-                    table.CheckConstraint("CH_PlanItem_Quantity_Positive", "Quantity >= 1");
+                    table.CheckConstraint("CH_PlanItem_Quantity_Positive", "\"Quantity\" >= 1");
                     table.ForeignKey(
                         name: "FK_SubscriptionPlanItems_Products_ProductId",
                         column: x => x.ProductId,
@@ -190,7 +190,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Invoices", x => x.Id);
-                    table.CheckConstraint("CH_Invoice_Amount_Positive", "Amount >= 0");
+                    table.CheckConstraint("CH_Invoice_Amount_Positive", "\"Amount\" >= 0");
                     table.ForeignKey(
                         name: "FK_Invoices_Subscriptions_SubscriptionId",
                         column: x => x.SubscriptionId,

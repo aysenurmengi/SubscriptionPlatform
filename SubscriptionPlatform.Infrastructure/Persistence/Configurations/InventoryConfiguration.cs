@@ -16,7 +16,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
             builder.Property(i => i.LowStockThreshold)
                    .IsRequired();
             
-            builder.ToTable(t => t.HasCheckConstraint("CH_Inventory_StockQuantity_Positive", "StockQuantity >= 0"));
+            builder.ToTable(t => t.HasCheckConstraint("CH_Inventory_StockQuantity_Positive", "\"StockQuantity\" >= 0"));
 
             builder.HasOne(i => i.Product) // inventory - product
                    .WithOne(p => p.Inventory)

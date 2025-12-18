@@ -13,7 +13,7 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
             builder.Property(i => i.Quantity)
                    .IsRequired();
             
-            builder.ToTable(t => t.HasCheckConstraint("CH_PlanItem_Quantity_Positive", "Quantity >= 1"));
+            builder.ToTable(t => t.HasCheckConstraint("CH_PlanItem_Quantity_Positive", "\"Quantity\" >= 1"));
 
             builder.HasOne(i => i.SubscriptionPlan) //
                    .WithMany(p => p.PlanItems)

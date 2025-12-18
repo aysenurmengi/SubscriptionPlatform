@@ -12,7 +12,7 @@ using SubscriptionPlatform.Infrastructure.Persistence;
 namespace SubscriptionPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251218074155_InitialCreate")]
+    [Migration("20251218082954_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -86,7 +86,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
 
                     b.ToTable("Inventory", t =>
                         {
-                            t.HasCheckConstraint("CH_Inventory_StockQuantity_Positive", "StockQuantity >= 0");
+                            t.HasCheckConstraint("CH_Inventory_StockQuantity_Positive", "\"StockQuantity\" >= 0");
                         });
                 });
 
@@ -127,7 +127,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
 
                     b.ToTable("Invoices", t =>
                         {
-                            t.HasCheckConstraint("CH_Invoice_Amount_Positive", "Amount >= 0");
+                            t.HasCheckConstraint("CH_Invoice_Amount_Positive", "\"Amount\" >= 0");
                         });
                 });
 
@@ -317,7 +317,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
 
                     b.ToTable("SubscriptionPlans", t =>
                         {
-                            t.HasCheckConstraint("CH_Plan_Price_Positive", "Price >= 0");
+                            t.HasCheckConstraint("CH_Plan_Price_Positive", "\"Price\" >= 0");
                         });
                 });
 
@@ -348,7 +348,7 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
 
                     b.ToTable("SubscriptionPlanItems", t =>
                         {
-                            t.HasCheckConstraint("CH_PlanItem_Quantity_Positive", "Quantity >= 1");
+                            t.HasCheckConstraint("CH_PlanItem_Quantity_Positive", "\"Quantity\" >= 1");
                         });
                 });
 
