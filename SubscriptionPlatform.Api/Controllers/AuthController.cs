@@ -22,7 +22,8 @@ namespace SubscriptionPlatform.API.Controllers
                 request.Email, 
                 request.Password, 
                 request.FirstName, 
-                request.LastName);
+                request.LastName,
+                request.Role);
 
             if (!result.IsSuccess)
             {

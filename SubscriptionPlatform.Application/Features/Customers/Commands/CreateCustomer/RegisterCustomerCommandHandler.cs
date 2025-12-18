@@ -28,7 +28,8 @@ namespace SubscriptionPlatform.Application.Features.Customers.Commands.CreateCus
                 request.Email, 
                 request.Password, 
                 request.FirstName, 
-                request.LastName);
+                request.LastName,
+                "Customer");
 
             if (!registrationResult.IsSuccess)
             {

@@ -1,12 +1,7 @@
-using MediatR;
-
-namespace SubscriptionPlatform.Application.Features.Products.Queries
+namespace SubscriptionPlatform.Application.DTOs.Products
 {
-    public record GetProductQuery(Guid Id) : IRequest<ProductDto>;
-
-    public class ProductDto
+    public class UpdateProductRequest
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }

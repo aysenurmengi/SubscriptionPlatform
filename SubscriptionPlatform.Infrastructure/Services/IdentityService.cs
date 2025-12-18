@@ -34,20 +34,26 @@ namespace SubscriptionPlatform.Infrastructure.Services
             return _jwtTokenGenerator.GenerateToken(user);
         }
 
-        public async Task<(bool IsSuccess, string[] Errors)> RegisterUserAsync(string email, string password, string firstName, string lastName)
+        public async Task<(bool IsSuccess, string[] Errors)> RegisterUserAsync(string email, string password, string firstName, string lastName, string role)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
             if (users.Any(u => u.Email == email))
             {
                 return (false, new[] { "Bu email adresi zaten kullanımda." });
             }
+
+            if (!Enum.TryParse<UserRole>(role, true, out var parsedRole))
+            {
+                parsedRole = UserRole.Customer;
+            }
+
             var newUser = new User
             {
                 Id = Guid.NewGuid(),
                 Email = email,
                 FullName = $"{firstName} {lastName}",
                 PasswordHash = password, 
-                Role = UserRole.Customer,
+                Role = parsedRole,
                 IsActive = true
             };
 
