@@ -1,6 +1,4 @@
 using MediatR;
-using System;
-using System.Collections.Generic;
 
 namespace SubscriptionPlatform.Application.Features.Preferences.Commands
 {

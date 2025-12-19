@@ -1,10 +1,6 @@
 using MediatR;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 using SubscriptionPlatform.Domain.Entities;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace SubscriptionPlatform.Application.Features.Preferences.Commands
 {
