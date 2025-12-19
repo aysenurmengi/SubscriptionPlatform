@@ -17,7 +17,7 @@ namespace SubscriptionPlatform.API.Controllers
         }
 
         [HttpPost]
-        [Route("Admin,Customer")]
+        [Authorize(Roles ="Admin,Customer")]
         public async Task<IActionResult> Create([FromBody] CreateSubscriptionCommand command)
         {
             try
