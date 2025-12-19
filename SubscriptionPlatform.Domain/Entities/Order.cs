@@ -13,6 +13,10 @@ namespace SubscriptionPlatform.Domain.Entities
         public string ShippingAddress {get; set;}
         public ShippingStatus ShippingStatus {get; set;}
         public string TrackingNumber {get; set;} = string.Empty;
+        public DateTime OrderDate { get; set; }
+        public decimal TotalAmount { get; set; }
         public bool IsSubscriptionRenewal {get; set;} = false; //tek seferlik mi? yenilenecek mi?
+
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }
