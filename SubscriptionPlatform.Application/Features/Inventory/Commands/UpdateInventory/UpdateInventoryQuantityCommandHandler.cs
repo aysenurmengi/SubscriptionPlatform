@@ -1,4 +1,5 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 using System;
 using System.Threading;
@@ -21,12 +22,12 @@ namespace SubscriptionPlatform.Application.Features.Inventory.Commands
 
             if (inventory == null)
             {
-                throw new ApplicationException($"Envanter kaydı bulunamadı: Product ID {request.ProductId}");
+                throw new NotFoundException(nameof(Inventory), request.ProductId);
             }
 
             inventory.StockQuantity = request.NewStockQuantity;
             
-            _unitOfWork.Inventories.UpdateAsync(inventory);
+            await _unitOfWork.Inventories.UpdateAsync(inventory);
             await _unitOfWork.CompleteAsync();
 
             return Unit.Value;

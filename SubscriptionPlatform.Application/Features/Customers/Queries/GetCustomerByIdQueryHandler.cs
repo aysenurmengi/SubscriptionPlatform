@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 
 namespace SubscriptionPlatform.Application.Features.Customers.Queries
@@ -20,17 +21,10 @@ namespace SubscriptionPlatform.Application.Features.Customers.Queries
             var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId);
             if (customer == null)
             {
-                throw new ApplicationException("Müşteri bulunamadı.");
+                throw new NotFoundException("Customer", request.CustomerId);
             }
 
-            var customerDto = new CustomerDto
-            {
-                Id = customer.Id,
-                Email = customer.Email,
-                FullName = $"{customer.FirstName} {customer.LastName}"
-            };
-            
-            return customerDto;
+            return _mapper.Map<CustomerDto>(customer);
         }
 
     }

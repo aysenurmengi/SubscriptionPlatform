@@ -15,7 +15,8 @@ namespace SubscriptionPlatform.Application
             services.AddMediatR(cfg => {
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 
-                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)); 
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+                 
             });
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

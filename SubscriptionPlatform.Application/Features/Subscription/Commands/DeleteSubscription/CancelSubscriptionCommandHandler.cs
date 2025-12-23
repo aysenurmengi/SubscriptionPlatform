@@ -1,5 +1,7 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
+using SubscriptionPlatform.Domain.Entities;
 using SubscriptionPlatform.Domain.Enums;
 
 namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
@@ -17,7 +19,7 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
         {
             var subscription = await _unitOfWork.Subscriptions.GetByIdAsync(request.SubscriptionId);
 
-            if (subscription == null) return Unit.Value;
+            if (subscription == null) throw new NotFoundException(nameof(Subscription), request.SubscriptionId);
 
             if (request.CancelImmediately)
             {
@@ -31,7 +33,7 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
             }
             
 
-            _unitOfWork.Subscriptions.UpdateAsync(subscription);
+            await _unitOfWork.Subscriptions.UpdateAsync(subscription);
             await _unitOfWork.CompleteAsync();
 
             return Unit.Value;

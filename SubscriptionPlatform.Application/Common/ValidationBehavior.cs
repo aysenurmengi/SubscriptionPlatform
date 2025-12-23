@@ -1,9 +1,6 @@
 using FluentValidation;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using ValidationException =  SubscriptionPlatform.Application.Common.Exceptions.ValidationException;
 
 namespace SubscriptionPlatform.Application.Common.Behaviors
 {
@@ -17,7 +14,7 @@ namespace SubscriptionPlatform.Application.Common.Behaviors
             _validators = validators;
         }
 
-        public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             if (_validators.Any())
             {
@@ -31,11 +28,15 @@ namespace SubscriptionPlatform.Application.Common.Behaviors
 
                 if (failures.Count != 0)
                 {
-                    throw new ValidationException(failures);
+                    var errors = failures
+                        .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
+                        .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
+
+                    throw new ValidationException(errors); 
                 }
             }
 
-            return next();
+            return await next();
         }
     }
 }

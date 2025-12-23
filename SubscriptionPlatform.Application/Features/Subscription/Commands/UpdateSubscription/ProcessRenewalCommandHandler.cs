@@ -3,15 +3,13 @@ using SubscriptionPlatform.Application.Interfaces.Repositories;
 using SubscriptionPlatform.Application.Interfaces;
 using SubscriptionPlatform.Domain.Enums;
 using SubscriptionPlatform.Application.Features.Invoices.Commands;
-using SubscriptionPlatform.Application.Features.Orders.Commands; 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using SubscriptionPlatform.Application.Features.Orders.Commands.CreateOrder;
+using SubscriptionPlatform.Application.Common.Exceptions;
+using SubscriptionPlatform.Domain.Entities;
 
 namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
 {
-    public class ProcessRenewalCommandHandler : IRequestHandler<ProcessRenewalCommand, bool>
+    public class ProcessRenewalCommandHandler : IRequestHandler<ProcessRenewalCommand, Unit>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPaymentService _paymentService;
@@ -24,24 +22,19 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
             _mediator = mediator;
         }
 
-        public async Task<bool> Handle(ProcessRenewalCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ProcessRenewalCommand request, CancellationToken cancellationToken)
         {
             var subscription = await _unitOfWork.Subscriptions.GetByIdAsync(request.SubscriptionId);
+
             if (subscription == null || subscription.Status != SubscriptionStatus.Active)
-            {
-                return false; 
-            }
-            // Yeni EKLENTİ: En güncel gönderim adresini son siparişten çekme
-            // Varsayım: Repository'de müşteriye ait son Order'ı çeken bir metot var.
-            //var latestOrder = await _unitOfWork.Orders.GetLatestOrderByCustomerIdAsync(subscription.CustomerId);
-            // Eğer hiç siparişi yoksa (ki abonelik varsa olmalı), Address'i boş bırakabiliriz (veya hata verebiliriz).
-            //var currentShippingAddress = latestOrder?.ShippingAddress ?? "Adres Bilgisi Eksik";
+                throw new NotFoundException(nameof(Subscription), request.SubscriptionId);
 
             
+            if (subscription.Status != SubscriptionStatus.Active)
+                throw new ApplicationException("Sadece aktif abonelikler yenilenebilir.");
+
             if (subscription.NextRenewalDate > DateTime.UtcNow)
-            {
-                return false; // yenileme zamanı gelmemiş
-            }
+                throw new ApplicationException("Bu aboneliğin yenileme tarihi henüz gelmedi.");
 
             var totalAmount = subscription.PlanPrice;
             
@@ -70,10 +63,10 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
                 });
 
                 subscription.NextRenewalDate = subscription.NextRenewalDate.AddMonths(1); 
-
                 subscription.Status = SubscriptionStatus.Active;
+
                 await _unitOfWork.CompleteAsync();
-                return true;
+                return Unit.Value;
                 
             }
             else
@@ -81,7 +74,7 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
                 subscription.Status = SubscriptionStatus.PaymentFailed;
                 await _unitOfWork.CompleteAsync();
 
-                return false;
+                throw new ApplicationException($"Yenileme ödemesi başarısız: {errorMessage}");
             }
         }
     }

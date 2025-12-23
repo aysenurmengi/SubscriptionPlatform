@@ -22,54 +22,31 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderCommand command)
         {
-            try
-            {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                if (userRole == "Customer" && userId != null)
-                {
-                    if (command.CustomerId.ToString() != userId)
-                    {
-                        return Unauthorized(new { message = "Sadece kendi hesabınız için sipariş oluşturabilirsiniz." });
-                    }
-                }
-
-                var orderId = await _mediator.Send(command);
-
-                return Ok(new 
-                {    
-                    orderId = orderId, 
-                    message = "Siparişiniz başarıyla alındı.",
-                    status = "Hazırlanıyor"
-                });
-            }
-            catch (ApplicationException ex)
+            if (userRole == "Customer" && userId != null && command.CustomerId.ToString() != userId)
             {
-                return BadRequest(new { message = ex.Message });
+                return Unauthorized(new { message = "Sadece kendi hesabınız için sipariş oluşturabilirsiniz." });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Sipariş oluşturulurken beklenmedik bir hata oluştu.", details = ex.Message });
-            }
+
+            var orderId = await _mediator.Send(command);
+
+            return Ok(new 
+            { 
+                Id = orderId, 
+                message = "Siparişiniz başarıyla alındı.",
+                status = "Hazırlanıyor"
+            });
         }
 
         [HttpPost("{id}/ship")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ShipOrder(Guid id)
         {
-            var command = new ShipOrderCommand(id);
-            
-            var result = await _mediator.Send(command);
-
-            if (result)
-            {
-                return Ok(new { message = "Sipariş kargoya verildi, takip numarası oluşturuldu ve müşteriye e-posta atıldı." });
-            }
-            else
-            {
-                return BadRequest(new { message = "İşlem başarısız. Sipariş bulunamadı veya müşteri bilgisi eksik." });
-            }
+            await _mediator.Send(new ShipOrderCommand(id));
+        
+            return Ok(new { message = "Sipariş kargoya verildi, takip numarası oluşturuldu ve müşteriye e-posta atıldı." });
         }
 
         [HttpGet("customer/{customerId}")]
@@ -79,17 +56,12 @@ namespace SubscriptionPlatform.API.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            if (userRole == "Customer" && userId != null)
+            if (userRole == "Customer" && userId != null && customerId.ToString() != userId)
             {
-                if (customerId.ToString() != userId)
-                {
-                    return Unauthorized(new { message = "Sadece kendi sipariş geçmişinizi görüntüleyebilirsiniz." });
-                }
+                return Unauthorized(new { message = "Sadece kendi sipariş geçmişinizi görüntüleyebilirsiniz." });
             }
 
-            var query = new GetCustomerOrdersQuery { CustomerId = customerId };
-            var result = await _mediator.Send(query);
-
+            var result = await _mediator.Send(new GetCustomerOrdersQuery { CustomerId = customerId });
             return Ok(result);
         }
     }

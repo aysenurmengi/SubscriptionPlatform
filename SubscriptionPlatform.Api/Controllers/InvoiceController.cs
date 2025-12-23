@@ -20,15 +20,9 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] GenerateInvoiceCommand command)
         {
-            try
-            {
-                var invoiceId = await _mediator.Send(command);
-                return Ok(new { invoiceId = invoiceId, message = "Fatura başarıyla oluşturuldu." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Fatura oluşturulurken hata oluştu.", error = ex.Message });
-            }
+            var invoiceId = await _mediator.Send(command);
+        
+            return StatusCode(201, new { invoiceId, message = "Fatura başarıyla oluşturuldu." });
             
         }
 
@@ -36,9 +30,7 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin,Customer")] //müşteri de kendi faturasını görsün
         public async Task<IActionResult> GetInvoicesBySubscription(Guid subscriptionId)
         {
-            var query = new GetSubscriptionInvoicesQuery { SubscriptionId = subscriptionId };
-            var result = await _mediator.Send(query);
-
+            var result = await _mediator.Send(new GetSubscriptionInvoicesQuery { SubscriptionId = subscriptionId });
             return Ok(result);
         }
     }

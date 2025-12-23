@@ -1,5 +1,7 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
+using SubscriptionPlatform.Domain.Entities;
 
 namespace SubscriptionPlatform.Application.Features.Customers.Commands.DeleteCustomer
 {
@@ -16,7 +18,7 @@ namespace SubscriptionPlatform.Application.Features.Customers.Commands.DeleteCus
             var customer = await _unitOfWork.Customers.GetByIdAsync(request.Id);
             if (customer == null)
             {
-                throw new ApplicationException("Müşteri bulunamadı.");
+                throw new NotFoundException(nameof(Customer), request.Id);
             }
 
             await _unitOfWork.Customers.DeleteAsync(customer);

@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,23 +13,18 @@ namespace SubscriptionPlatform.API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public ProductController(IMediator mediator)
+        private readonly IMapper _mapper;
+        public ProductController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
         {
-            var command = new CreateProductCommand
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Price = request.Price,
-                ImageUrl = request.ImageUrl
-            };
-
+            var command = _mapper.Map<CreateProductCommand>(request);
             var productId = await _mediator.Send(command);
 
             return CreatedAtAction(nameof(GetById), new { id = productId }, new { id = productId });
@@ -37,14 +33,7 @@ namespace SubscriptionPlatform.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var query = new GetProductQuery(id);
-            var product = await _mediator.Send(query);
-
-            if (product == null)
-            {
-                return NotFound(new { message = "Aradığınız ürün bulunamadı." });
-            }
-
+            var product = await _mediator.Send(new GetProductQuery(id));
             return Ok(product);
         }
 
@@ -52,36 +41,18 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductRequest request)
         {
-            var command = new UpdateProductCommand
-            {
-                Id = id,
-                Name = request.Name,
-                Description = request.Description,
-                Price = request.Price,
-                ImageUrl = request.ImageUrl,
-                IsActive = request.IsActive
-            };
+            var command = _mapper.Map<UpdateProductCommand>(request);
+            command.Id = id;
 
-            try
-            {
-                await _mediator.Send(command);
-                
-                return NoContent(); // 204
-            }
-            catch (ApplicationException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var command = new DeleteProductCommand { Id = id };
-
-            await _mediator.Send(command);
-
+            await _mediator.Send(new DeleteProductCommand { Id = id });
             return NoContent();
         }
     }

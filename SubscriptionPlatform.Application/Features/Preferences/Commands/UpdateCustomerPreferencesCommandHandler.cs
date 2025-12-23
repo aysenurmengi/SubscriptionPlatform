@@ -1,4 +1,5 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 using SubscriptionPlatform.Domain.Entities;
 
@@ -15,6 +16,9 @@ namespace SubscriptionPlatform.Application.Features.Preferences.Commands
 
         public async Task<Unit> Handle(UpdateCustomerPreferencesCommand request, CancellationToken cancellationToken)
         {
+            var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId);
+            if (customer == null) throw new NotFoundException(nameof(Customer), request.CustomerId);
+
             var existingPreferences = await _unitOfWork.Preferences.GetAllByCustomerIdAsync(request.CustomerId);
 
             if (existingPreferences.Any())

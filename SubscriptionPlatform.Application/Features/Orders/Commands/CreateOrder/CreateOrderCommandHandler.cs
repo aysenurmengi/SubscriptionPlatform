@@ -1,4 +1,5 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
 using SubscriptionPlatform.Domain.Entities;
 using SubscriptionPlatform.Domain.Enums;
@@ -38,35 +39,39 @@ namespace SubscriptionPlatform.Application.Features.Orders.Commands.CreateOrder
                 {
                     var product = await _unitOfWork.Products.GetByIdAsync(itemDto.ProductId);
 
-                    if (product != null)
+                    if (product == null) 
+                        throw new NotFoundException(nameof(Product), itemDto.ProductId);
+                        
+                    var orderItem = new OrderItem
                     {
-                        var orderItem = new OrderItem
-                        {
-                            Id = Guid.NewGuid(),
-                            OrderId = newOrder.Id,
-                            ProductId = product.Id,
-                            ProductName = product.Name,
-                            UnitPrice = product.Price,
-                            Quantity = itemDto.Quantity
-                        };
+                        Id = Guid.NewGuid(),
+                        OrderId = newOrder.Id,
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        UnitPrice = product.Price,
+                        Quantity = itemDto.Quantity
+                    };
 
-                        newOrder.OrderItems.Add(orderItem);
-                        calculatedTotal += orderItem.UnitPrice * orderItem.Quantity;
-                    }
+                    newOrder.OrderItems.Add(orderItem);
+                    calculatedTotal += orderItem.UnitPrice * orderItem.Quantity;
                 }
             }
 
             // abonelik siparişini işle (eğer SubscriptionId varsa)
-            if (request.SubscriptionId.HasValue) //fiyat 0 görünmesin diye
-            {   var subscription = await _unitOfWork.Subscriptions.GetByIdAsync(request.SubscriptionId.Value);
-                if (subscription != null && !request.Items.Any())
-                {
-                    newOrder.TotalAmount = subscription.PlanPrice; 
-                }
+            if (request.SubscriptionId.HasValue && !request.Items.Any())
+            {
+                var subscription = await _unitOfWork.Subscriptions.GetByIdAsync(request.SubscriptionId.Value);
+                if (subscription == null) 
+                    throw new NotFoundException(nameof(Subscription), request.SubscriptionId.Value);
+
+                newOrder.TotalAmount = subscription.PlanPrice; 
             }
-
-            newOrder.TotalAmount = calculatedTotal;
-
+            else
+            {
+                // ürün varsa veya abonelik değilse hesaplanan tutarı al
+                newOrder.TotalAmount = calculatedTotal;
+            }
+            
             await _unitOfWork.Orders.AddAsync(newOrder);
             await _unitOfWork.CompleteAsync();
 

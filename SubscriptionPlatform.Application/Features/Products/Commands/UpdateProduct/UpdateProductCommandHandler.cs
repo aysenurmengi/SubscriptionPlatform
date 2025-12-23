@@ -1,8 +1,7 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using SubscriptionPlatform.Domain.Entities;
 
 namespace SubscriptionPlatform.Application.Features.Products.Commands
 {
@@ -20,9 +19,7 @@ namespace SubscriptionPlatform.Application.Features.Products.Commands
             var product = await _unitOfWork.Products.GetByIdAsync(request.Id);
 
             if (product == null)
-            {
-                throw new ApplicationException($"Güncellenecek ürün bulunamadı: ID {request.Id}");
-            }
+                throw new NotFoundException(nameof(Product), request.Id);
 
             product.Name = request.Name;
             product.Description = request.Description;

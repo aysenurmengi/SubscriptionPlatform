@@ -5,6 +5,7 @@ using SubscriptionPlatform.Domain.Entities;
 using SubscriptionPlatform.Domain.Enums;
 using SubscriptionPlatform.Application.Features.Orders.Commands.CreateOrder;
 using SubscriptionPlatform.Application.Features.Invoices.Commands;
+using SubscriptionPlatform.Application.Common.Exceptions;
 
 namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
 {
@@ -24,11 +25,10 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Commands
         public async Task<Guid> Handle(CreateSubscriptionCommand request, CancellationToken cancellationToken)
         {
             var plan = await _unitOfWork.SubscriptionPlans.GetByIdAsync(request.PlanId); 
-            if (plan == null) throw new ApplicationException("Geçersiz Abonelik Planı.");
+            if (plan == null) throw new NotFoundException(nameof(SubscriptionPlan), request.PlanId);
             
             var totalAmount = plan.Price * request.Quantity;
 
-            
             // kartı saklamak için token oluşturma
             var permanentToken = await _paymentService.StoreCreditCardAsync(request.CustomerId.ToString(), request.CardToken);
             if (string.IsNullOrEmpty(permanentToken)) throw new ApplicationException("Kart saklama işlemi başarısız.");

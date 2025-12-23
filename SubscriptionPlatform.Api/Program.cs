@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SubscriptionPlatform.API.Middlewares;
 using SubscriptionPlatform.Application;
 using SubscriptionPlatform.Infrastructure;
 using System.Text;
@@ -39,6 +40,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(); // Yetkilendirme servisini ekle
 
 var app = builder.Build();
+
+app.UseGlobalExceptionHandling();
 
 if (app.Environment.IsDevelopment())
 {

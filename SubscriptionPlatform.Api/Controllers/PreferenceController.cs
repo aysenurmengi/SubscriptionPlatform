@@ -22,55 +22,35 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> UpdatePreferences([FromBody] UpdateCustomerPreferencesCommand command)
         {
-            try
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (userRole == "Customer" && userId != null && command.CustomerId.ToString() != userId)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-                if (userRole == "Customer" && userId != null)
-                {
-                    if (command.CustomerId.ToString() != userId)
-                    {
-                        return Unauthorized(new { message = "Sadece kendi tercihlerinizi güncelleyebilirsiniz." });
-                    }
-                }
-
-                await _mediator.Send(command);
-
-                return Ok(new { message = "Tercihler başarıyla güncellendi." });
+                return Unauthorized(new { message = "Sadece kendi tercihlerinizi güncelleyebilirsiniz." });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Tercihler güncellenirken hata oluştu.", error = ex.Message });
-            }
+
+            await _mediator.Send(command);
+
+            return Ok(new { message = "Tercihler başarıyla güncellendi." });
         }
 
         [HttpGet("customer/{customerId}")]
         [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> GetCustomerPreferences(Guid customerId)
         {
-            try
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (userRole == "Customer" && userId != null && customerId.ToString() != userId)
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-                if (userRole == "Customer" && userId != null)
-                {
-                    if (customerId.ToString() != userId)
-                    {
-                        return Unauthorized(new { message = "Sadece kendi tercihlerinizi görüntüleyebilirsiniz." });
-                    }
-                }
-
-                var query = new GetCustomerPreferencesQuery { CustomerId = customerId };
-                var result = await _mediator.Send(query);
-
-                return Ok(result);
+                return Unauthorized(new { message = "Sadece kendi tercihlerinizi görüntüleyebilirsiniz." });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Tercihler getirilirken bir hata oluştu.", error = ex.Message });
-            }
+
+            var query = new GetCustomerPreferencesQuery { CustomerId = customerId };
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
         }
     }
 }

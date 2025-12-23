@@ -6,6 +6,7 @@ using SubscriptionPlatform.Application.Features.Customers.Queries;
 using SubscriptionPlatform.Application.Features.Customers.Commands.CreateCustomer;
 using SubscriptionPlatform.Application.Features.Customers.Commands.UpdateCustomer;
 using SubscriptionPlatform.Application.Features.Customers.Commands.DeleteCustomer;
+using AutoMapper;
 
 namespace SubscriptionPlatform.API.Controllers
 {
@@ -14,47 +15,28 @@ namespace SubscriptionPlatform.API.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public CustomerController(IMediator mediator)
+        private readonly IMapper _mapper;
+        public CustomerController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateCustomerRequest request)
         {
-            var command = new RegisterCustomerCommand
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                Password = request.Password
-
-            };
-
-            try
-            {
-                var customerId = await _mediator.Send(command);
-               
-                return StatusCode(201, new { id = customerId });
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(new { message = ex.Message }); 
-            }
+            var command = _mapper.Map<RegisterCustomerCommand>(request);
+            var customerId = await _mediator.Send(command);
+    
+            return StatusCode(201, new { id = customerId });
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var query = new GetCustomerByIdQuery(id);
-            var customer = await _mediator.Send(query);
-
-            if (customer == null)
-            {
-                return NotFound(new { message = "Aradığınız kullanıcı bulunamadı." });
-            }
+            var customer = await _mediator.Send(new GetCustomerByIdQuery(id));
 
             return Ok(customer);
         }
@@ -63,50 +45,27 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerRequest request)
         {
-            var command = new UpdateCustomerProfileCommand
-            {
-                Id = id,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email
-            };
+            var command = _mapper.Map<UpdateCustomerProfileCommand>(request);
+            command.Id = id;
 
-            try
-            {
-                await _mediator.Send(command);
-                
-                return NoContent(); // 204
-            }
-            catch (ApplicationException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+            await _mediator.Send(command);
+    
+            return NoContent(); // 204
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var command = new DeleteCustomerCommand {Id = id};
-            try
-            {
-                await _mediator.Send(command);
-                return NoContent();
-            }
-            catch (ApplicationException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+            await _mediator.Send(new DeleteCustomerCommand { Id = id });
+            return NoContent();
         }
 
         [HttpGet("{customerId}/subscriptions")]
         [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> GetSubscriptions(Guid customerId)
         {
-            var query = new GetCustomerSubscriptionsQuery { CustomerId = customerId };
-    
-            var result = await _mediator.Send(query);
-
+            var result = await _mediator.Send(new GetCustomerSubscriptionsQuery { CustomerId = customerId });
             return Ok(result);
         }
 
@@ -114,19 +73,7 @@ namespace SubscriptionPlatform.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {
-            if (string.IsNullOrEmpty(email))
-            {
-                return BadRequest("Email adresi boş olamaz.");
-            }
-
-            var query = new GetCustomerByEmailQuery(email);
-            var customer = await _mediator.Send(query);
-
-            if (customer == null)
-            {
-                return NotFound("Bu email adresine sahip müşteri bulunamadı.");
-            }
-
+            var customer = await _mediator.Send(new GetCustomerByEmailQuery(email));
             return Ok(customer);
         }
     }

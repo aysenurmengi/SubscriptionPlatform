@@ -1,5 +1,7 @@
 using MediatR;
+using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
+using SubscriptionPlatform.Domain.Entities;
 
 namespace SubscriptionPlatform.Application.Features.Subscriptions.Queries
 {
@@ -16,7 +18,8 @@ namespace SubscriptionPlatform.Application.Features.Subscriptions.Queries
         {
             var subscription = await _unitOfWork.Subscriptions.GetByIdAsync(request.SubscriptionId);
 
-            if (subscription == null) throw new ApplicationException($"Abonelik bulunamadı: ID {request.SubscriptionId}");
+            if (subscription == null) 
+                throw new NotFoundException(nameof(Subscription), request.SubscriptionId);
             
             // plan adını göstermek için
             var plan = await _unitOfWork.SubscriptionPlans.GetByIdAsync(subscription.PlanId);
