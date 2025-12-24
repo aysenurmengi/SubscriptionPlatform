@@ -7,5 +7,6 @@ namespace SubscriptionPlatform.Application.Interfaces.Repositories
         Task<IEnumerable<Order>>GetPendingFulfillmentOrdersAsync();
         Task<IEnumerable<Order>> GetByCustomerIdAsync(Guid customerId);
         Task<Order?> GetLatestOrderByCustomerIdAsync(Guid customerId);
+        Task<Order?> GetOrderWithCustomerAsync(Guid id);
     }
 }

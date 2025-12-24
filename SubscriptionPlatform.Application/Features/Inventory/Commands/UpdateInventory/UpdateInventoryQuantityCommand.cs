@@ -8,5 +8,6 @@ namespace SubscriptionPlatform.Application.Features.Inventory.Commands
         public Guid ProductId { get; set; }
         public int NewStockQuantity { get; set; } 
         public string Reason { get; set; } 
+        public int NewLowStockThreshold { get; set; }
     }
 }

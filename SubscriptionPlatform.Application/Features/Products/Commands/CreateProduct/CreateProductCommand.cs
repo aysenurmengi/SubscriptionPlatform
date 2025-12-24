@@ -10,5 +10,6 @@ namespace SubscriptionPlatform.Application.Features.Products.Commands
         public decimal Price { get; set; }
         public string ImageUrl { get; set; }
         public bool IsActive { get; set; } = true;
+        public string Tags { get; set; }
     }
 }

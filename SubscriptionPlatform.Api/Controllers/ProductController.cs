@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SubscriptionPlatform.Application.DTOs.Products;
 using SubscriptionPlatform.Application.Features.Products.Commands;
 using SubscriptionPlatform.Application.Features.Products.Queries;
+using SubscriptionPlatform.Application.Features.Products.Queries.GetAllProducts;
 
 namespace SubscriptionPlatform.API.Controllers
 {
@@ -28,6 +29,13 @@ namespace SubscriptionPlatform.API.Controllers
             var productId = await _mediator.Send(command);
 
             return CreatedAtAction(nameof(GetById), new { id = productId }, new { id = productId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _mediator.Send(new GetAllProductsQuery());
+            return Ok(result);
         }
 
         [HttpGet("{id}")]

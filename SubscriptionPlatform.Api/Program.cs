@@ -38,6 +38,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization(); // Yetkilendirme servisini ekle
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -54,5 +55,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

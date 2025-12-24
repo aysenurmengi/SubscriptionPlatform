@@ -1,9 +1,8 @@
 using MediatR;
 using SubscriptionPlatform.Application.Common.Exceptions;
 using SubscriptionPlatform.Application.Interfaces.Repositories;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using SubscriptionPlatform.Domain.Entities;
+using InventoryEntity = SubscriptionPlatform.Domain.Entities.Inventory;
 
 namespace SubscriptionPlatform.Application.Features.Inventory.Commands
 {
@@ -22,12 +21,26 @@ namespace SubscriptionPlatform.Application.Features.Inventory.Commands
 
             if (inventory == null)
             {
-                throw new NotFoundException(nameof(Inventory), request.ProductId);
+                var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
+                if (product == null)
+                    throw new NotFoundException(nameof(Product), request.ProductId);
+
+                inventory = new InventoryEntity
+                {
+                    Id = Guid.NewGuid(),
+                    ProductId = request.ProductId,
+                    StockQuantity = request.NewStockQuantity,
+                    LowStockThreshold = request.NewLowStockThreshold,
+                };
+
+                await _unitOfWork.Inventories.AddAsync(inventory);
+            }else
+            {
+                inventory.StockQuantity = request.NewStockQuantity;
+        
+                await _unitOfWork.Inventories.UpdateAsync(inventory);
             }
 
-            inventory.StockQuantity = request.NewStockQuantity;
-            
-            await _unitOfWork.Inventories.UpdateAsync(inventory);
             await _unitOfWork.CompleteAsync();
 
             return Unit.Value;

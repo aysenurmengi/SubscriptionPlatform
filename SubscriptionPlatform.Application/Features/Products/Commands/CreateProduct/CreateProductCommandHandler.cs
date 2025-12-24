@@ -25,7 +25,8 @@ namespace SubscriptionPlatform.Application.Features.Products.Commands
                 Description = request.Description,
                 Price = request.Price,
                 ImageUrl = request.ImageUrl,
-                IsActive = request.IsActive 
+                IsActive = request.IsActive,
+                Tags = request.Tags
             };
 
             await _unitOfWork.Products.AddAsync(product);

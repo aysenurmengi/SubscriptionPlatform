@@ -30,7 +30,7 @@ namespace SubscriptionPlatform.API.Controllers
             return StatusCode(201, new { id = subscriptionId, message = "Abonelik başarıyla oluşturuldu." });  
         }
 
-        [HttpPost("cancel")] //silmiyoruz pasif hale getiriyoruz
+        [HttpPost("cancel/{id}")] //silmiyoruz pasif hale getiriyoruz
         [Authorize(Roles ="Admin,Customer")]
         public async Task<IActionResult> CancelSubscription(Guid id)
         {

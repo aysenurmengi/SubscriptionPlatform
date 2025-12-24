@@ -22,13 +22,15 @@ namespace SubscriptionPlatform.Application.Features.Orders.Commands.ShipOrder
 
         public async Task<Unit> Handle(ShipOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = await _unitOfWork.Orders.GetByIdAsync(request.OrderId);
-            
-            if (order == null || order.Customer == null) 
+            // 1. Siparişi ve Müşteriyi çekiyoruz
+            var order = await _unitOfWork.Orders.GetOrderWithCustomerAsync(request.OrderId);
+
+            if (order == null)
                 throw new NotFoundException(nameof(Order), request.OrderId);
-            
+
             if (order.Customer == null)
-                throw new ApplicationException("Siparişe ait müşteri bilgisi bulunamadığı için kargolama yapılamıyor.");
+                throw new ApplicationException("Siparişe ait müşteri bilgisi bulunamadı.");
+            var targetEmail = order.Customer.Email;
 
             var trackingNumber = await _fulfillmentService.CreateShipmentAsync(order);
 
@@ -39,10 +41,20 @@ namespace SubscriptionPlatform.Application.Features.Orders.Commands.ShipOrder
             await _unitOfWork.Orders.UpdateAsync(order);
             await _unitOfWork.CompleteAsync();
 
-            await _emailService.SendEmailAsync(
-                order.Customer.Email,
-                "Siparişiniz Yola Çıktı", 
-                $"Merhaba, siparişiniz {trackingNumber} takip numarası ile kargoya verilmiştir.");
+            if (!string.IsNullOrEmpty(targetEmail))
+            {
+                try
+                {
+                    await _emailService.SendEmailAsync(
+                        targetEmail,
+                        "Siparişiniz Yola Çıktı",
+                        $"Merhaba, siparişiniz {trackingNumber} takip numarası ile kargoya verilmiştir.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Email gönderilemedi fakat sipariş süreci tamamlandı: {ex.Message}");
+                }
+            }
 
             return Unit.Value;
         }
