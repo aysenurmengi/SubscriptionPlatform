@@ -37,6 +37,12 @@ namespace SubscriptionPlatform.Application.Features.Inventory.Commands
             }else
             {
                 inventory.StockQuantity = request.NewStockQuantity;
+                inventory.LowStockThreshold = request.NewLowStockThreshold;
+
+                if (inventory.StockQuantity > inventory.LowStockThreshold)
+                    {
+                        inventory.IsLowStockAlertSent = false;
+                    }
         
                 await _unitOfWork.Inventories.UpdateAsync(inventory);
             }

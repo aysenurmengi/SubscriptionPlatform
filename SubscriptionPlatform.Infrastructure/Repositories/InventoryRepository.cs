@@ -20,7 +20,7 @@ namespace SubscriptionPlatform.Infrastructure.Repositories
         {
             return await _context.Inventory
                 .Include(i => i.Product) 
-                .Where(i => i.StockQuantity < threshold)
+                .Where(i => i.StockQuantity <= i.LowStockThreshold && !i.IsLowStockAlertSent)
                 .ToListAsync();
         }
     }
