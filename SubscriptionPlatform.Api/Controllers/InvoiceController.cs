@@ -21,9 +21,9 @@ namespace SubscriptionPlatform.API.Controllers
         public async Task<IActionResult> Create([FromBody] GenerateInvoiceCommand command)
         {
             var invoiceId = await _mediator.Send(command);
-        
+
             return StatusCode(201, new { invoiceId, message = "Fatura başarıyla oluşturuldu." });
-            
+
         }
 
         [HttpGet("subscription/{subscriptionId}")]

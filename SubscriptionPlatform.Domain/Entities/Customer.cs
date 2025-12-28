@@ -6,6 +6,7 @@ namespace SubscriptionPlatform.Domain.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set;}
+        public string FullName => $"{FirstName} {LastName}";
         public string Email { get; set; }
 
         public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();

@@ -18,37 +18,34 @@ namespace SubscriptionPlatform.Application.Features.Customers.Commands.CreateCus
 
         public async Task<Guid> Handle(RegisterCustomerCommand request, CancellationToken cancellationToken)
         {
-            var existingCustomer = await _unitOfWork.Customers.GetByEmailAsync(request.Email);
-            if (existingCustomer != null)
-            {
-                throw new ApplicationException("Bu email adresi zaten kullanılıyor.");
-            }
-
             var registrationResult = await _identityService.RegisterUserAsync(
-                request.Email, 
-                request.Password, 
-                request.FirstName, 
+                request.Email,
+                request.Password,
+                request.FirstName,
                 request.LastName,
-                "Customer");
+                request.Role);
 
             if (!registrationResult.IsSuccess)
             {
-                throw new ApplicationException($"Kullanıcı kaydı başarısız: {string.Join(", ", registrationResult.Errors)}");
+                throw new ApplicationException("Kullanıcı kaydı başarısız.");
             }
 
-            // domain entitysini oluşturma
-            var newCustomer = new Customer
+            if (request.Role == "Customer")
             {
-                Id = Guid.NewGuid(), 
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-            };
+                var newCustomer = new Customer
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Email = request.Email,
+                };
 
-            await _unitOfWork.Customers.AddAsync(newCustomer);
-            await _unitOfWork.CompleteAsync();
+                await _unitOfWork.Customers.AddAsync(newCustomer);
+                await _unitOfWork.CompleteAsync();
 
-            return newCustomer.Id;
+                return newCustomer.Id;
+            }
+
+            return Guid.Empty;
         }
     }
 }

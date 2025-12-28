@@ -20,7 +20,7 @@ namespace SubscriptionPlatform.Application.Features.Inventory.Queries
             var allInventory = await _unitOfWork.Inventories.GetAllAsync();
 
             var lowStockItems = allInventory
-                .Where(i => i.StockQuantity <= i.LowStockThreshold)
+                .Where(i => i.StockQuantity <= i.LowStockThreshold && !i.IsLowStockAlertSent)
                 .ToList();
 
             return _mapper.Map<IReadOnlyList<InventoryStatusDto>>(lowStockItems);

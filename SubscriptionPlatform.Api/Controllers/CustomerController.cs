@@ -7,6 +7,7 @@ using SubscriptionPlatform.Application.Features.Customers.Commands.CreateCustome
 using SubscriptionPlatform.Application.Features.Customers.Commands.UpdateCustomer;
 using SubscriptionPlatform.Application.Features.Customers.Commands.DeleteCustomer;
 using AutoMapper;
+using SubscriptionPlatform.Application.Features.Customers.Queries.GetCustomers;
 
 namespace SubscriptionPlatform.API.Controllers
 {
@@ -22,7 +23,7 @@ namespace SubscriptionPlatform.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateCustomerRequest request)
         {
@@ -39,6 +40,14 @@ namespace SubscriptionPlatform.API.Controllers
             var customer = await _mediator.Send(new GetCustomerByIdQuery(id));
 
             return Ok(customer);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<CustomerDto>>> GetAll()
+        {
+            var customers = await _mediator.Send(new GetCustomersQuery());
+            return Ok(customers);
         }
 
         [HttpPut("{id}")]

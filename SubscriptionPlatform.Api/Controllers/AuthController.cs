@@ -1,5 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SubscriptionPlatform.Application.DTOs.Auth;
+using SubscriptionPlatform.Application.Features.Customers.Commands.CreateCustomer;
 using SubscriptionPlatform.Application.Interfaces;
 
 namespace SubscriptionPlatform.API.Controllers
@@ -9,28 +11,24 @@ namespace SubscriptionPlatform.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IIdentityService _identityService;
+        private readonly IMediator _mediator;
 
-        public AuthController(IIdentityService identityService)
+        public AuthController(IIdentityService identityService, IMediator mediator)
         {
             _identityService = identityService;
+            _mediator = mediator;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterCustomerCommand command)
         {
-            var result = await _identityService.RegisterUserAsync(
-                request.Email, 
-                request.Password, 
-                request.FirstName, 
-                request.LastName,
-                request.Role);
+            var resultId = await _mediator.Send(command);
 
-            if (!result.IsSuccess)
-            {
-                return BadRequest(new { Errors = result.Errors });
-            }
-
-            return Ok(new { Message = "Kullanıcı başarıyla oluşturuldu." });
+            return Ok(new 
+            { 
+                Message = "Kullanıcı kaydı başarıyla tamamlandı.",
+                Id = resultId
+            });
         }
 
         [HttpPost("login")]

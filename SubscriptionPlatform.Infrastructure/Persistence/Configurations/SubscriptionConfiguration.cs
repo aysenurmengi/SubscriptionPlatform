@@ -21,7 +21,14 @@ namespace SubscriptionPlatform.Infrastructure.Persistence.Configurations
             builder.HasOne(s => s.Customer) // subscription - customer
                    .WithMany(c => c.Subscriptions) // customer -> subscriptions
                    .HasForeignKey(s => s.CustomerId); 
+            
+            builder.HasOne(s => s.SubscriptionPlan)
+                   .WithMany()                      
+                   .HasForeignKey(s => s.PlanId)   
+                   .IsRequired()                   
+                   .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasIndex(s => s.PlanId);
             builder.HasIndex(s => s.CustomerId); // customerId index
         }
     }

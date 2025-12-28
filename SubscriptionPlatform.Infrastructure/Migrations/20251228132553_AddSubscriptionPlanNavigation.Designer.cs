@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SubscriptionPlatform.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using SubscriptionPlatform.Infrastructure.Persistence;
 namespace SubscriptionPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251228132553_AddSubscriptionPlanNavigation")]
+    partial class AddSubscriptionPlanNavigation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,11 +326,14 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("SubscriptionPlanId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("PlanId");
+                    b.HasIndex("SubscriptionPlanId");
 
                     b.ToTable("Subscriptions");
                 });
@@ -518,8 +524,8 @@ namespace SubscriptionPlatform.Infrastructure.Migrations
 
                     b.HasOne("SubscriptionPlatform.Domain.Entities.SubscriptionPlan", "SubscriptionPlan")
                         .WithMany()
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");

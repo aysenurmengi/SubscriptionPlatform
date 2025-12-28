@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using SubscriptionPlatform.API.Middlewares;
 using SubscriptionPlatform.Application;
 using SubscriptionPlatform.Infrastructure;
+using SubscriptionPlatform.Infrastructure.Configuration;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 var jwtKey = builder.Configuration["JwtSettings:Key"] ?? throw new InvalidOperationException("JWT Key is missing!");
 var issuer = builder.Configuration["JwtSettings:Issuer"];

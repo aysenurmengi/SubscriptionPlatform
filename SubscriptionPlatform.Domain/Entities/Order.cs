@@ -15,7 +15,7 @@ namespace SubscriptionPlatform.Domain.Entities
         public string TrackingNumber {get; set;} = string.Empty;
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
-        public bool IsSubscriptionRenewal {get; set;} = false; //tek seferlik mi? yenilenecek mi?
+        public bool IsSubscriptionRenewal {get; set;} = false; //tek seferlik mi? yenilenecek mi? olmasa?
 
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
