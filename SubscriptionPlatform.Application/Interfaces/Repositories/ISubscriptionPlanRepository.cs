@@ -4,5 +4,6 @@ namespace SubscriptionPlatform.Application.Interfaces.Repositories
 {
     public interface ISubscriptionPlanRepository : IGenericRepository<SubscriptionPlan>
     {
+         Task<SubscriptionPlan?> GetByIdWithItemsAsync(Guid id);
     }
 }
