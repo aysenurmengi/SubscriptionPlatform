@@ -20,6 +20,9 @@ namespace SubscriptionPlatform.Application.Features.Orders.Commands.CreateOrder
 
         public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
+            bool isSubscriptionRenewalOrder = request.SubscriptionId.HasValue && request.IsSubscriptionRenewal;
+            bool isSingleOrder = !request.SubscriptionId.HasValue && !request.IsSubscriptionRenewal;
+
             var newOrder = new Order
             {
                 Id = Guid.NewGuid(),
@@ -55,10 +58,26 @@ namespace SubscriptionPlatform.Application.Features.Orders.Commands.CreateOrder
                         Quantity = itemDto.Quantity
                     };
 
+                    if (isSingleOrder || isSubscriptionRenewalOrder)
+                    {
+                        var inventory = await _unitOfWork.Inventories.GetByProductIdAsync(product.Id);
+
+                        if (inventory == null)
+                            throw new NotFoundException("Inventory", product.Id);
+
+                        if (inventory.StockQuantity < itemDto.Quantity)
+                            throw new ApplicationException($"{product.Name} için yeterli stok yok");
+
+                        inventory.StockQuantity -= itemDto.Quantity;
+                        _unitOfWork.Inventories.UpdateAsync(inventory);
+                    }
+
                     newOrder.OrderItems.Add(orderItem);
                     calculatedTotal += orderItem.UnitPrice * orderItem.Quantity;
                 }
             }
+
+
 
             // abonelik siparişini işle (eğer SubscriptionId varsa)
             if (request.SubscriptionId.HasValue && !request.Items.Any())
@@ -78,19 +97,17 @@ namespace SubscriptionPlatform.Application.Features.Orders.Commands.CreateOrder
             await _unitOfWork.Orders.AddAsync(newOrder);
             await _unitOfWork.CompleteAsync();
 
-            // ✅ MAIL GÖNDERME
-            var customer =
-                await _unitOfWork.Customers.GetByIdAsync(request.CustomerId);
+            //mail
+            var customer = await _unitOfWork.Customers.GetByIdAsync(request.CustomerId);
 
             if (customer != null)
             {
-                bool isSubscriptionOrder =
-                    request.IsSubscriptionRenewal || request.SubscriptionId.HasValue;
+                bool sendMail = isSingleOrder || isSubscriptionRenewalOrder;
 
                 string subject;
                 string body;
 
-                if (isSubscriptionOrder)
+                if (isSubscriptionRenewalOrder)
                 {
                     subject = "Aboneliğiniz Yenilendi 🎉";
 
